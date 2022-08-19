@@ -11,14 +11,14 @@ storage:
       mode: 0644
       contents:
         inline: topeka
-    - path: /etc/NetworkManager/system-connections/enp3s0f3.nmconnection
+    - path: /etc/NetworkManager/system-connections/eno4.nmconnection
       mode: 0600
       contents:
         inline: |
           [connection]
-          id=enp3s0f3
+          id=eno4
           type=ethernet
-          interface-name=enp3s0f3
+          interface-name=eno4
           [ipv4]
           address1=185.149.234.122/29,185.149.234.121
           dns=1.1.1.1;1.0.0.1;
