@@ -16,14 +16,13 @@ storage:
       contents:
         inline: |
           [connection]
-          id=ens2
+          id=eno4
           type=ethernet
           interface-name=eno4
           [ipv4]
           address1=185.149.234.120/29
-          dhcp-hostname=topeka
+          gateway=185.149.234.121
           dns=1.1.1.1;1.0.0.1;
-          dns-search=
           may-fail=false
           method=manual
     - path: /etc/zincati/config.d/51-rollout-wariness.toml
