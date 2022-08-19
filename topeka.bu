@@ -1,0 +1,81 @@
+variant: fcos
+version: 1.4.0
+passwd:
+  users:
+    - name: connorjc
+      ssh_authorized_keys: [ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILXHP9vRErIuoMKWCedx1GQ3jA5Usd7lCLTzTySbyWeF]
+      groups: [adm, wheel, sudo, systemd-journal, docker]
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: topeka
+    - path: /etc/NetworkManager/system-connections/eno4.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=ens2
+          type=ethernet
+          interface-name=eno4
+          [ipv4]
+          address1=185.149.234.120/29
+          dhcp-hostname=topeka
+          dns=1.1.1.1;1.0.0.1;
+          dns-search=
+          may-fail=false
+          method=manual
+    - path: /etc/zincati/config.d/51-rollout-wariness.toml
+      contents:
+        inline: |
+          [identity]
+          rollout_wariness = 0.001
+    - path: /etc/zincati/config.d/55-updates-strategy.toml
+      contents:
+        inline: |
+          [updates]
+          strategy = "periodic"
+          [[updates.periodic.window]]
+          days = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ]
+          start_time = "00:00"
+          length_minutes = 60
+  links:
+    - path: /etc/alternatives/iptables
+      target: /usr/sbin/iptables-nft
+      overwrite: true
+      hard: false
+    - path: /etc/alternatives/iptables-restore
+      target: /usr/sbin/iptables-nft-restore
+      overwrite: true
+      hard: false
+    - path: /etc/alternatives/iptables-save
+      target: /usr/sbin/iptables-nft-save
+      overwrite: true
+      hard: false
+    - path: /etc/alternatives/ip6tables
+      target: /usr/sbin/ip6tables-nft
+      overwrite: true
+      hard: false
+    - path: /etc/alternatives/ip6tables-restore
+      target: /usr/sbin/ip6tables-nft-restore
+      overwrite: true
+      hard: false
+    - path: /etc/alternatives/ip6tables-save
+      target: /usr/sbin/ip6tables-nft-save
+      overwrite: true
+      hard: false
+systemd:
+  units:
+    - name: custom-bootupd-auto.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Bootupd automatic update
+
+        [Service]
+        ExecStart=/usr/bin/bootupctl update
+        RemainAfterExit=yes
+
+        [Install]
+        WantedBy=multi-user.target
