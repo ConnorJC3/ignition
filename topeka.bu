@@ -38,6 +38,15 @@ storage:
           days = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" ]
           start_time = "00:00"
           length_minutes = 60
+    - path: /etc/sysctl.d/99-sysctl.conf
+      contents:
+        inline: |
+          net.ipv4.tcp_fastopen = 3
+          net.ipv4.tcp_slow_start_after_idle = 0
+          net.ipv4.tcp_keepalive_time = 30
+          net.ipv4.tcp_keepalive_intvl = 10
+          net.ipv4.tcp_keepalive_probes = 3
+          net.ipv4.tcp_mtu_probing = 1
 systemd:
   units:
     - name: custom-bootupd-auto.service
@@ -49,6 +58,24 @@ systemd:
         [Service]
         ExecStart=/usr/bin/bootupctl update
         RemainAfterExit=yes
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: rpm-ostree-install.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Layer with rpm-ostree
+        Wants=network-online.target
+        After=network-online.target
+        Before=zincati.service
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/bin/rpm-ostree install --apply-live --allow-inactive docker-compose
+        ExecStart=/bin/touch /var/lib/%N.stamp
 
         [Install]
         WantedBy=multi-user.target
