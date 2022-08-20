@@ -1,1 +1,0 @@
-sudo docker run --pull=always --privileged --rm -v /dev:/dev -v /run/udev:/run/udev quay.io/coreos/coreos-installer:release install /dev/sda --ignition-url https://ignition.connorjc.io/topeka.ign --stream next
